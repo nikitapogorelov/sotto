@@ -69,6 +69,7 @@ jobs:
           done
 
           codesign --verify --deep --strict --verbose=2 Sotto.app
+          test -f Sotto.app/Contents/Resources/ggml-metal.metal
 
           version="$(plutil -extract CFBundleShortVersionString raw Sotto.app/Contents/Info.plist)"
           build="$(plutil -extract CFBundleVersion raw Sotto.app/Contents/Info.plist)"

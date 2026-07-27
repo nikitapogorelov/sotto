@@ -7,6 +7,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+./scripts/prepare-dependencies.sh
+
 DEV_DIR="$(xcode-select -p)"
 if [[ "$DEV_DIR" == *CommandLineTools* ]]; then
   FWK="$DEV_DIR/Library/Developer/Frameworks"

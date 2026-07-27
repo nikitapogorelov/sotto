@@ -1,0 +1,22 @@
+diff --git a/Package.swift b/Package.swift
+index 9d224940a..ded0edbdd 100644
+--- a/Package.swift
++++ b/Package.swift
+@@ -31 +31,2 @@ let package = Package(
+-               "ggml/src/ggml-metal-embed.metal"
++               "ggml/src/ggml-metal-embed.metal",
++               "ggml/src/ggml-metal.metal"
+@@ -43 +43,0 @@ let package = Package(
+-            resources: [.process("ggml/src/ggml-metal.metal")],
+diff --git a/ggml/src/ggml-metal.m b/ggml/src/ggml-metal.m
+index 04ec5117f..40f3f3c06 100644
+--- a/ggml/src/ggml-metal.m
++++ b/ggml/src/ggml-metal.m
+@@ -449,6 +449 @@ @implementation GGMLMetalClass
+-        NSBundle * bundle = nil;
+-#ifdef SWIFT_PACKAGE
+-        bundle = SWIFTPM_MODULE_BUNDLE;
+-#else
+-        bundle = [NSBundle bundleForClass:[GGMLMetalClass class]];
+-#endif
++        NSBundle * bundle = [NSBundle bundleForClass:[GGMLMetalClass class]];

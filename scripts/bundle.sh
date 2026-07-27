@@ -10,6 +10,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+./scripts/prepare-dependencies.sh
+
 BUILD_ARGS=(-c release "$@")
 swift build "${BUILD_ARGS[@]}"
 BIN_DIR="$(swift build "${BUILD_ARGS[@]}" --show-bin-path)"
@@ -34,6 +36,14 @@ for bundle in "$BIN_DIR"/*.bundle; do
 done
 if [ -f Resources/Sotto.icns ]; then
   cp Resources/Sotto.icns "$APP/Contents/Resources/Sotto.icns"
+fi
+
+# The compatibility patch keeps whisper.cpp's mixed C/C++ target free of the
+# Objective-C SwiftPM resource accessor. The statically linked Metal backend
+# resolves its bundle to the main app, so place the shader at the resource root.
+WHISPER_METAL_SOURCE=".build/checkouts/whisper.cpp/ggml/src/ggml-metal.metal"
+if [ -f "$WHISPER_METAL_SOURCE" ]; then
+  cp "$WHISPER_METAL_SOURCE" "$APP/Contents/Resources/ggml-metal.metal"
 fi
 
 # Prefer a stable identity (SOTTO_SIGN_IDENTITY, or an existing self-signed
