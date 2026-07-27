@@ -13,10 +13,23 @@ jobs:
     name: Test, build, and release
     runs-on: macos-14
     timeout-minutes: 60
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
 
     steps:
       - name: Check out source
         uses: actions/checkout@v6
+
+      - name: Verify Swift toolchain
+        shell: bash
+        run: |
+          xcodebuild -version
+          toolchain="$(swift --version)"
+          echo "$toolchain"
+          if [[ "$toolchain" != *"Apple Swift version 6."* ]]; then
+            echo "::error::Sotto requires Swift 6; selected toolchain was: $toolchain"
+            exit 1
+          fi
 
       - name: Validate release tag
         id: version
