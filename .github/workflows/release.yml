@@ -1,0 +1,80 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Test, build, and release
+    runs-on: macos-14
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Validate release tag
+        id: version
+        shell: bash
+        run: |
+          tag="$GITHUB_REF_NAME"
+          if [[ "$tag" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)(-[0-9A-Za-z][0-9A-Za-z.-]*)?$ ]]; then
+            echo "version=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::Expected a tag such as v0.1.0 or v0.1.0-beta.1; got $tag"
+            exit 1
+          fi
+
+      - name: Run tests
+        run: ./scripts/test.sh
+
+      - name: Build universal app bundle
+        env:
+          SOTTO_VERSION: ${{ steps.version.outputs.version }}
+          SOTTO_BUILD_NUMBER: ${{ github.run_number }}
+          SOTTO_SIGN_IDENTITY: "-"
+        run: ./scripts/bundle.sh --arch arm64 --arch x86_64
+
+      - name: Verify app bundle
+        env:
+          EXPECTED_VERSION: ${{ steps.version.outputs.version }}
+          EXPECTED_BUILD: ${{ github.run_number }}
+        shell: bash
+        run: |
+          binary="Sotto.app/Contents/MacOS/Sotto"
+          architectures="$(lipo -archs "$binary")"
+          for architecture in arm64 x86_64; do
+            if [[ " $architectures " != *" $architecture "* ]]; then
+              echo "::error::$binary is missing $architecture (found: $architectures)"
+              exit 1
+            fi
+          done
+
+          codesign --verify --deep --strict --verbose=2 Sotto.app
+
+          version="$(plutil -extract CFBundleShortVersionString raw Sotto.app/Contents/Info.plist)"
+          build="$(plutil -extract CFBundleVersion raw Sotto.app/Contents/Info.plist)"
+          test "$version" = "$EXPECTED_VERSION"
+          test "$build" = "$EXPECTED_BUILD"
+
+      - name: Package release assets
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent Sotto.app Sotto.zip
+          shasum -a 256 Sotto.zip > Sotto.zip.sha256
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            Sotto.zip \
+            Sotto.zip.sha256 \
+            --verify-tag \
+            --title "Sotto $GITHUB_REF_NAME" \
+            --generate-notes \
+            --latest

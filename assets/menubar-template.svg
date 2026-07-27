@@ -1,0 +1,8 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <title>Sotto menu bar template icon (monochrome, macOS tints it)</title>
+  <rect x="3" y="8" width="4" height="16" rx="2" fill="#000000"/>
+  <rect x="9" y="11" width="4" height="10" rx="2" fill="#000000"/>
+  <rect x="15" y="13" width="4" height="6" rx="2" fill="#000000"/>
+  <rect x="21" y="14.5" width="4" height="3" rx="1.5" fill="#000000"/>
+  <circle cx="28.5" cy="16" r="2.5" fill="#000000"/>
+</svg>

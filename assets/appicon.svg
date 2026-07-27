@@ -1,0 +1,9 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>Sotto app icon</title>
+  <rect x="0" y="0" width="1024" height="1024" rx="229" fill="#1C1B22"/>
+  <rect x="196" y="342" width="72" height="340" rx="36" fill="#F6F4EF"/>
+  <rect x="316" y="396" width="72" height="232" rx="36" fill="#F6F4EF"/>
+  <rect x="436" y="438" width="72" height="148" rx="36" fill="#F6F4EF"/>
+  <rect x="556" y="470" width="72" height="84" rx="36" fill="#F6F4EF"/>
+  <circle cx="736" cy="512" r="46" fill="#E5484D"/>
+</svg>
